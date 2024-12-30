@@ -9,8 +9,6 @@ from app.narrative import run_narrative_workflow
 app = FastAPI()
 
 
-
-
 # Ensure an uploads directory exists
 UPLOAD_DIR = "./uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
