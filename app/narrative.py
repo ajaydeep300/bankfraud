@@ -46,10 +46,7 @@ def create_thread(client, assistant):
             {
                 "role": "user",
                 "content": (
-                    "We are going to analyze the accounts, transactions, and fraud information of a user to determine "
-                    "if the user has committed a financial crime. There will be an assistant and a user; the user will "
-                    "ask questions from the narrative questions list. The assistant will interpret these questions, look "
-                    "for supporting data in the uploaded files, and build an answer using that data."
+                    """We are going to analyze the accounts, transactions, and fraud information of a user to determine if the user has committed a financial crime. There will be an assistant and a user; the user will ask questions from the narrative questions list. The assistant will interpret these questions, look for supporting data in the uploaded files, and build an answer using that data."""
                 )
             }
         ]
@@ -87,6 +84,7 @@ def process_questions(client, assistant, thread, patterns):
                 "Identify yourself as a financial statement analyst. The files contain analysis about a bank customer's "
                 "transactions. We have to build a final narrative that concludes whether a financial crime has been committed. "
                 "Answer the question by referencing the file search data where relevant."
+                "finally mention a confidence score in percentage out of 100, that tells me how much is the analysis data from your search is supporting the answer to the question, the percentage is a holistic overview of how much the gathered information supports our question."
             )
         )
 
