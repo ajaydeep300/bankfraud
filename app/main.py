@@ -1,11 +1,14 @@
+import sys
 from fastapi import FastAPI, UploadFile, File, Form
 
 import os
 
+from fastapi.responses import FileResponse
+
 # Import the new methods from snow
 from app.snow import set_file_paths, main as snow_main
 from app.bancorp import main as bancorp_main
-from app.narrative import run_narrative_workflow
+from app.narrative import cli_main, execute_narrative_workflow
 app = FastAPI()
 
 
@@ -61,18 +64,27 @@ def analyze_data():
 
 @app.post("/narrative/")
 async def narrative_endpoint(
-    files: list[UploadFile], 
+    file1: UploadFile = File(...),
+    file2: UploadFile = File(...),
+    file3: UploadFile = File(...),
     analysis_file: str = Form(None)
 ):
+    """
+    Endpoint for narrative generation. Uses cli_main() function from narrative script.
+    """
     saved_paths = []
-    for f in files:
-        local_path = os.path.join(UPLOAD_DIR, f.filename)
-        with open(local_path, "wb") as out_file:
-            out_file.write(await f.read())
+    for file in [file1, file2, file3]:
+        local_path = os.path.join(UPLOAD_DIR, file.filename)
+        with open(local_path, "wb") as f:
+            f.write(await file.read())
         saved_paths.append(local_path)
 
-    # Now pass the file paths & optional analysis_file to your narrative function
-    # (assuming 'analysis_file' is already on disk, or you can handle it similarly)
-    run_narrative_workflow(saved_paths, analysis_file=analysis_file)
-    return {"message": "Narrative analysis complete"}
+    execute_narrative_workflow(saved_paths, analysis_file)
+
+    # Check for the output file
+    output_file = "output_narrative.txt"
+    if os.path.exists(output_file):
+        return FileResponse(output_file, media_type="text/plain", filename="output_narrative.txt")
+    else:
+        return {"message": "Narrative analysis completed, but output file was not found."}
 
